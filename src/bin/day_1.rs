@@ -35,7 +35,8 @@ fn part2() {
         .filter(|&change| change != 0)
         .for_each(|change| {
             let with_modulo_change = dial + (change % 100);
-            if dial != 0 && (with_modulo_change < 0 || with_modulo_change > 100) {
+            let crosses_zero = dial != 0 && (with_modulo_change < 0 || with_modulo_change > 100);
+            if crosses_zero {
                 amount_of_times_at_0 += 1;
             }
 
