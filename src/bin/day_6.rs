@@ -45,7 +45,7 @@ impl Matrix {
     }
 }
 
-#[derive(Debug)]
+#[derive(Debug, Copy, Clone)]
 enum Operation {
     Multiply,
     Add,
@@ -98,7 +98,6 @@ impl Homework {
     }
 
     pub fn new_part2(input: &str) -> Self {
-        let mut number_vecs: Vec<Vec<usize>> = Vec::new();
         let mut operations: Option<Vec<Operation>> = None;
 
         let column_count = input.lines().collect::<Vec<_>>()[0]
@@ -118,7 +117,8 @@ impl Homework {
         });
 
         let mut matrices = widths
-            .into_iter()
+            .iter()
+            .cloned()
             .map(|width| Matrix::new(width, height))
             .collect::<Vec<_>>();
 
@@ -127,26 +127,28 @@ impl Homework {
             let parsing_numbers = parts[0].parse::<usize>().is_ok();
 
             if parsing_numbers {
-                let mut matrix_index = 0;
-
                 let mut remaining = line.chars().collect::<Vec<char>>();
 
-                // line.chars().for_each(|token| {
-                //     let is_separator = !was_whitespace && token.is_whitespace();
-                //     if is_separator {
-                //         was_whitespace = true;
-                //         matrix_index += 1;
-                //         return;
-                //     }
+                widths
+                    .iter()
+                    .cloned()
+                    .enumerate()
+                    .for_each(|(matrix_index, width)| {
+                        let is_last = matrix_index == widths.len() - 1;
+                        let matrix_numbers = if is_last {
+                            remaining.drain(0..width).collect::<Vec<_>>()
+                        } else {
+                            remaining.drain(0..=width).collect::<Vec<_>>()
+                        };
 
-                //     if token.is_whitespace() {
-                //         was_whitespace = true;
-                //     } else {
-                //         let num = token.to_string().parse::<usize>().unwrap();
-                //         let matrix = &mut matrices[matrix_index];
-                //         matrix.set(x, y, num);
-                //     };
-                // });
+                        matrix_numbers.iter().enumerate().for_each(|(x, val)| {
+                            if !val.is_whitespace() {
+                                let num = val.to_string().parse::<usize>().unwrap();
+                                let matrix = &mut matrices[matrix_index];
+                                matrix.set(x, y, num);
+                            }
+                        });
+                    });
             } else {
                 operations = Some(
                     parts
@@ -163,9 +165,15 @@ impl Homework {
             }
         });
 
-        Self {
-            problems: Vec::new(),
-        }
+        let operations = operations.unwrap();
+
+        let problems = matrices
+            .into_iter()
+            .enumerate()
+            .map(|(i, m)| (operations[i], m.into_column_numbers_right_to_left()))
+            .collect::<Vec<(Operation, Vec<usize>)>>();
+
+        Self { problems }
     }
 }
 
@@ -185,7 +193,7 @@ fn part1() {
 }
 
 fn part2() {
-    let homework = Homework::new_part2(TEST_INPUT);
+    let homework = Homework::new_part2(INPUT);
 
     let sum = homework
         .problems
