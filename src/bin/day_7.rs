@@ -50,24 +50,18 @@ fn main() {
 fn part1() {
     let manifold = TachyonManifold::new(INPUT);
     let mut beams: HashSet<(i32, i32)> = HashSet::new();
-    let mut analyzing_row = 0i32;
     let mut splits = 0usize;
 
-    loop {
-        if analyzing_row == manifold.height - 1 {
-            break;
-        }
-
+    (0..manifold.height).for_each(|row| {
         if beams.is_empty() {
             beams.insert((manifold.entrance.0, manifold.entrance.1 + 1));
-            analyzing_row += 1;
-            continue;
+            return;
         }
 
         let beams_on_analyzed_row = beams
             .iter()
             .cloned()
-            .filter(|(_, y)| *y == analyzing_row)
+            .filter(|(_, y)| *y == row)
             .collect::<Vec<Coordinates>>();
 
         beams_on_analyzed_row
@@ -91,9 +85,7 @@ fn part1() {
                     beams.insert(new_right_beam);
                 }
             });
-
-        analyzing_row += 1;
-    }
+    });
 
     println!("Part1: beam was split: {} times", splits);
 }
