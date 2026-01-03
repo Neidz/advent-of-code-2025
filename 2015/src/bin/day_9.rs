@@ -29,7 +29,7 @@ fn part1() {
 
 fn shortest_distance(
     path_map: &HashMap<String, Vec<Path>>,
-    to_visit: &Vec<Path>,
+    to_visit: &[Path],
     visited: HashSet<String>,
     shortest: &mut usize,
     distance: usize,
@@ -51,7 +51,7 @@ fn shortest_distance(
             }
         } else {
             let next_paths = path_map.get(&next.target).unwrap();
-            shortest_distance(&path_map, next_paths, visited, shortest, total);
+            shortest_distance(path_map, next_paths, visited, shortest, total);
         }
     });
 }
@@ -74,7 +74,7 @@ fn part2() {
 
 fn longest_distance(
     path_map: &HashMap<String, Vec<Path>>,
-    to_visit: &Vec<Path>,
+    to_visit: &[Path],
     visited: HashSet<String>,
     longest: &mut usize,
     distance: usize,
@@ -96,7 +96,7 @@ fn longest_distance(
             }
         } else {
             let next_paths = path_map.get(&next.target).unwrap();
-            longest_distance(&path_map, next_paths, visited, longest, total);
+            longest_distance(path_map, next_paths, visited, longest, total);
         }
     });
 }
@@ -104,7 +104,7 @@ fn longest_distance(
 fn parse_paths(input: &str) -> HashMap<String, Vec<Path>> {
     let mut path_map: HashMap<String, Vec<Path>> = HashMap::new();
 
-    input.lines().into_iter().for_each(|l| {
+    input.lines().for_each(|l| {
         let parts = l.split_whitespace().collect::<Vec<&str>>();
 
         let first_path = Path {
@@ -127,7 +127,7 @@ fn parse_paths(input: &str) -> HashMap<String, Vec<Path>> {
     path_map
 }
 
-const TEST_INPUT: &str = "London to Dublin = 464
+const _TEST_INPUT: &str = "London to Dublin = 464
 London to Belfast = 518
 Dublin to Belfast = 141";
 
