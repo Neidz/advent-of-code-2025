@@ -31,7 +31,23 @@ fn part1() {
     println!("Part 1: result length is {len}");
 }
 
-fn part2() {}
+fn part2() {
+    let mut digits = INPUT.to_owned();
+
+    for i in 0..50 {
+        println!("Iteration: {i}");
+        let seq = parse_to_sequences(&digits);
+        digits = seq
+            .into_iter()
+            .map(|s| s.expand())
+            .collect::<Vec<String>>()
+            .join("");
+    }
+
+    let len = digits.len();
+
+    println!("Part 2: result length is {len}");
+}
 
 fn parse_to_sequences(input: &str) -> Vec<Sequence> {
     let mut remaining = input.chars().collect::<Vec<char>>();
@@ -52,7 +68,7 @@ fn parse_to_sequences(input: &str) -> Vec<Sequence> {
     sequences
 }
 
-fn count_first(find_in: &Vec<char>, to_find: char) -> usize {
+fn count_first(find_in: &[char], to_find: char) -> usize {
     if find_in.is_empty() {
         return 0;
     }
